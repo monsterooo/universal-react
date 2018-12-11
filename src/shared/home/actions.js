@@ -1,13 +1,9 @@
-export const FETCH_GISTS_REQUESTED = 'FETCH_GISTS_REQUESTED';
-export const FETCH_GISTS__SUCCEEDED = 'FETCH_GISTS__SUCCEEDED';
-export const FETCH_GISTS__FAILED = 'FETCH_GISTS__FAILED';
+// new
+export const FETCH_GITHUB_UESR_REQUESTED = 'FETCH_GITHUB_UESR_REQUESTED';
+export const FETCH_GITHUB_USER__SUCCESSED = 'FETCH_GITHUB_USER__SUCCESSED';
+export const FETCH_GITHUB_USER__FAILED = 'FETCH_GITHUB_USER__FAILED';
 
-export const fetchGists = () => ({
-    type: FETCH_GISTS_REQUESTED,
-    payload: {},
-});
-
-export const receiveGists = payload => ({
-    type: FETCH_GISTS__SUCCEEDED,
-    payload,
+export const fetchUser = () => ({
+  type: FETCH_GITHUB_UESR_REQUESTED,
+  payload: {},
 });

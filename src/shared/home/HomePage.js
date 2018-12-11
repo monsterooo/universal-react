@@ -1,48 +1,51 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import format from 'date-fns/format';
-import locale from 'date-fns/locale/fr';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 
 
-import { fetchGists as fetchGistsAction } from './actions';
-import GistsList from './GistList';
+import { fetchUser as fetchUserAction } from './actions';
+import GithubUser from './GithubUser';
 
 export class HomePage extends Component {
-    componentWillMount() {
-        this.props.loadGists();
-    }
+  componentWillMount() {
+    this.props.loadUser();
+  }
 
-    render() {
-        const { gists } = this.props;
-        return (
-            <div>
-                <Helmet
-                    title="Welcome"
-                />
-                <h1>Homepage</h1>
-                <p>{format(new Date(), 'dddd DD MMMM YYYY', { locale })}</p>
-                {gists.length > 0 && <GistsList gists={gists.slice(0, 10)} />}
-            </div>
-        );
-    }
+  render() {
+    const { gists } = this.props;
+    return (
+      <div>
+        <Helmet
+          title="Welcome"
+        />
+        <h1>首页</h1>
+        {/* {gists.length > 0 && <GistsList gists={gists.slice(0, 10)} />} */}
+        <GithubUser user={gists} />
+      </div>
+    );
+  }
 }
 
 HomePage.propTypes = {
-    loadGists: PropTypes.func.isRequired,
-    gists: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired,
-    })).isRequired,
+  loadUser: PropTypes.func.isRequired,
+  gists: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+  })).isRequired,
 };
 
 HomePage.defaultProps = {
-    gists: [],
+  gists: {},
 };
 
 const mapStateToProps = ({ gists }) => ({
-    gists,
+  gists,
 });
 
-export default connect(mapStateToProps, { loadGists: fetchGistsAction })(HomePage);
+export default connect(
+  mapStateToProps,
+  {
+    loadUser: fetchUserAction,
+  },
+)(HomePage);

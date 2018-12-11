@@ -1,53 +1,53 @@
-import { all, call, put, takeEvery } from 'redux-saga/effects';
+import { call, put, takeEvery, fork } from 'redux-saga/effects';
 import fetch from 'isomorphic-fetch';
 
 import {
-    FETCH_GISTS_REQUESTED,
-    FETCH_GISTS__SUCCEEDED,
-    FETCH_GISTS__FAILED,
+  FETCH_GITHUB_UESR_REQUESTED,
+  FETCH_GITHUB_USER__SUCCESSED,
+  FETCH_GITHUB_USER__FAILED,
 } from './actions';
 
-export const fetchUrl = () => fetch('https://api.github.com/gists', {
-    method: 'get',
-    headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-    },
-}).then((response) => {
-    if (!response.ok) {
-        throw new Error();
-    }
 
-    return response.json();
+export const fetchUser = () => fetch('https://api.github.com/search/users?q=fullname:%E8%92%8B%E8%91%97', {
+  method: 'get',
+  // headers: {
+  //   Accept: 'application/json',
+  //   'Content-Type': 'application/json',
+  // },
+}).then((response) => {
+  if (!response.ok) {
+    throw new Error();
+  }
+  return response.json();
 });
 
-export function* fetchGists() {
-    try {
-        const gists = yield call(fetchUrl);
 
-        yield put({
-            type: FETCH_GISTS__SUCCEEDED,
-            payload: {
-                gists: gists.map(gist => ({
-                    id: gist.id,
-                    title: gist.description || 'pas de titre',
-                })),
-            },
-        });
-    } catch (error) {
-        yield put({
-            type: FETCH_GISTS__FAILED,
-            payload: error,
-        });
-    }
+// 执行异步action任务 搜索github用户
+export function* fetchSearchGithubUser() {
+  try {
+    const user = yield call(fetchUser); // 调用异步接口
+    // 发送一个action
+    yield put({
+      type: FETCH_GITHUB_USER__SUCCESSED,
+      payload: user,
+    });
+  } catch (error) {
+    yield put({
+      type: FETCH_GITHUB_USER__FAILED,
+      payload: error,
+    });
+  }
 }
 
-export function* fetchGistsSaga() {
-    yield takeEvery(FETCH_GISTS_REQUESTED, fetchGists);
+export function* fetchSearchGithubUserSaga() {
+  yield takeEvery(FETCH_GITHUB_UESR_REQUESTED, fetchSearchGithubUser);
 }
 
+// 初始化saga调用任务
 export default function* rootSaga() {
-    yield all([
-        fetchGistsSaga(),
-    ]);
+  yield fork(fetchSearchGithubUserSaga);
+  // yield all([
+  //   fetchGistsSaga(),
+  //   fetchSearchGithubUserSaga(),
+  // ]);
 }

@@ -16,12 +16,14 @@ import playlistReducer from '../shared/playlists/reducer';
 import sagas from '../shared/home/sagas';
 
 // Grab the state from a global variable injected into the server-generated HTML
+// 服务端传递过来的数据
 const preloadedState = window.__PRELOADED_STATE__;
 
+// 组合reducers
 const reducer = combineReducers({
-    gists: gistReducers,
-    playlists: playlistReducer,
-    routing: routerReducer,
+  gists: gistReducers,
+  playlists: playlistReducer,
+  routing: routerReducer,
 });
 
 const history = createHistory();
@@ -30,55 +32,55 @@ const sagaMiddleware = createSagaMiddleware();
 delete window.__PRELOADED_STATE__;
 
 const store = createStore(
-    reducer,
-    preloadedState,
-    compose(
-        applyMiddleware(routerMiddleware(history), sagaMiddleware),
-        window.devToolsExtension ? window.devToolsExtension() : f => f,
-    ),
+  reducer,
+  preloadedState,
+  compose(
+    applyMiddleware(routerMiddleware(history), sagaMiddleware),
+    window.devToolsExtension ? window.devToolsExtension() : f => f,
+  ),
 );
 
 // then run the saga
 sagaMiddleware.run(sagas);
 
 const createStyleManager = () => MuiThemeProvider.createDefaultContext({
-    theme: createMuiTheme({
-        palette: createPalette({
-            type: 'light',
-        }),
+  theme: createMuiTheme({
+    palette: createPalette({
+      type: 'light',
     }),
+  }),
 });
 
 class Main extends Component {
-    // Remove the server-side injected CSS.
-    componentDidMount() {
-        const jssStyles = document.getElementById('jss-server-side');
-        if (jssStyles && jssStyles.parentNode) {
-            jssStyles.parentNode.removeChild(jssStyles);
-        }
+  // Remove the server-side injected CSS.
+  componentDidMount() {
+    const jssStyles = document.getElementById('jss-server-side');
+    if (jssStyles && jssStyles.parentNode) {
+      jssStyles.parentNode.removeChild(jssStyles);
     }
+  }
 
-    render() {
-        return (
-            <Router>
-                <App {...this.props} />
-            </Router>
-        );
-    }
+  render() {
+    return (
+      <Router>
+        <App {...this.props} />
+      </Router>
+    );
+  }
 }
 
 // Create a styleManager instance.
 const { styleManager, theme } = createStyleManager();
 
 loadComponents().then(() => {
-    render(
-        <MuiThemeProvider styleManager={styleManager} theme={theme}>
-            <Provider store={store}>
-                <ConnectedRouter history={history}>
-                    <Main />
-                </ConnectedRouter >
-            </Provider>
-        </MuiThemeProvider>,
-        document.getElementById('root'),
-    );
+  render(
+    <MuiThemeProvider styleManager={styleManager} theme={theme}>
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+          <Main />
+        </ConnectedRouter >
+      </Provider>
+    </MuiThemeProvider>,
+    document.getElementById('root'),
+  );
 });
